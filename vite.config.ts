@@ -3,11 +3,11 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(() => {
+export default defineConfig(({ command }) => {
   return {
     plugins: [react(), tailwindcss()],
-    // Base path: relative './' allows deployment to any GitHub Pages repository name (e.g. /game-test/)
-    base: './',
+    // Set base path for GitHub Pages (repository: game-test) during build, '/' for local dev
+    base: command === 'build' ? '/game-test/' : '/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
