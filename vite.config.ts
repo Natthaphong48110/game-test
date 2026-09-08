@@ -6,7 +6,8 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
-    base: '/game-test/',
+    // Base path: relative './' allows deployment to any GitHub Pages repository name (e.g. /game-test/)
+    base: './',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

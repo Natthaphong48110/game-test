@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bot, Send, X, Sparkles, MessageSquare, Loader2 } from 'lucide-react';
 import { sound } from '../utils/audio';
+import { getLocalRoboAnswer } from '../utils/robotKnowledge';
 
 interface AIBuddyModalProps {
   isOpen: boolean;
@@ -66,16 +67,19 @@ export const AIBuddyModal: React.FC<AIBuddyModalProps> = ({ isOpen, onClose }) =
         {
           id: Math.random().toString(),
           sender: 'bot',
-          text: data.reply || 'พี่โรโบพร้อมช่วยเสมอนะครับ ถามต่อได้เลยนะ!',
+          text: data.reply || getLocalRoboAnswer(query),
         },
       ]);
     } catch {
+      // Fallback for GitHub Pages static hosting or offline mode
+      sound.playStep();
+      const localAnswer = getLocalRoboAnswer(query);
       setMessages((prev) => [
         ...prev,
         {
           id: Math.random().toString(),
           sender: 'bot',
-          text: 'อัลกอริทึมคือลำดับขั้นตอนที่ชัดเจนในการแก้ปัญหาครับ เช่น แปรงฟัน หรือใส่รองเท้า ลองคิดทีละสเต็ปดูนะคนเก่ง!',
+          text: localAnswer,
         },
       ]);
     } finally {
