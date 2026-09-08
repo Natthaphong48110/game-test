@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Prompt', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-display {
+  font-family: 'Fredoka', 'Prompt', system-ui, sans-serif;
+}
+
+/* Custom bounce / pulse keyframes if needed */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

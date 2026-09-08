@@ -1,0 +1,6 @@
+{
+  "name": "AlgoKids - ตะลุยโลกอัลกอริทึม",
+  "description": "เว็บเรียนรู้อัลกอริทึมและการคิดเชิงคำนวณสำหรับเด็กประถมศึกษา พร้อมเกมเสริมทักษะแสนสนุกและเข้าใจง่าย",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
