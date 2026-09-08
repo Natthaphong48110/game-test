@@ -59,17 +59,49 @@ async function startServer() {
 - คำถามจากน้อง: "${message}"
 - หัวข้อที่กำลังเรียนรู้: "${topic || 'ทั่วไป'}"`;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
-        contents: prompt,
-      });
+      // Use robust model fallback sequence to prevent 503 high demand spikes
+      const candidateModels = [
+        "gemini-flash-latest",
+        "gemini-3.1-flash-lite",
+        "gemini-3.8-flash",
+      ];
 
+      let replyText = "";
+      let modelUsed = "";
+
+      for (const modelName of candidateModels) {
+        try {
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+          });
+          if (response && response.text) {
+            replyText = response.text.trim();
+            modelUsed = modelName;
+            break;
+          }
+        } catch (modelErr: any) {
+          // Log model failover gracefully without crashing
+          console.warn(`Model ${modelName} unavailable (${modelErr?.status || modelErr?.message || 'error'}), trying next candidate...`);
+        }
+      }
+
+      if (replyText) {
+        res.json({
+          reply: replyText,
+          source: "gemini",
+          model: modelUsed,
+        });
+        return;
+      }
+
+      // If all candidate models were temporarily unavailable
       res.json({
-        reply: response.text || "พยายามได้ดีมากเลยครับคนเก่ง! มีอะไรถามพี่โรโบได้อีกเสมอนะครับ",
-        source: "gemini",
+        reply: "พี่โรโบอยู่นี่ครับคนเก่ง! อัลกอริทึมก็คือขั้นตอน 1-2-3 ในการแก้ปัญหาหรือทำงานให้สำเร็จ เช่น ถ้าจะทำไข่เจียว ก็ต้อง 1. ตอกไข่ 2. ตีไข่ 3. ทอดในกระทะร้อนๆ ลองคิดทีละขั้นดูนะ!",
+        source: "fallback",
       });
     } catch (err: any) {
-      console.error("Gemini API Error:", err);
+      console.warn("Gemini API Handler notice:", err?.message || err);
       res.json({
         reply: "โอ๊ะโอ พี่โรโบกำลังประมวลผลอยู่ แต่อยากบอกน้องว่า การคิดทีละขั้นตามลำดับคือหัวใจสำคัญของอัลกอริทึมครับ ลองทำภารกิจต่อไปได้เลยนะ!",
         source: "fallback",
